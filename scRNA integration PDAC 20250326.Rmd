@@ -1,0 +1,109 @@
+---
+title: "snRNA PDAC 20250326"
+author: "xiaoming li"
+date: "2025-03-26"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(Seurat)
+library(tidyr)
+library(dplyr)
+library(ggpubr)
+library(scales)
+library(ggplot2)
+library(stringr)
+library(patchwork)
+```
+
+```{r}
+PDAC <- readRDS("D:/AI work/hubeihospital/humanPDAC6sample20250325.rds")
+```
+
+```{r}
+PDAC
+```
+
+```{r}
+# note that you can set `label = TRUE` or use the LabelClusters function to help label
+# individual clusters
+DimPlot(PDAC, reduction = "umap",label=TRUE)
+```
+
+```{r}
+# note that you can set `label = TRUE` or use the LabelClusters function to help label
+# individual clusters
+DimPlot(PDAC, reduction = "umap",label=TRUE,group.by = 'sample')
+```
+```{r}
+PDAC$sample <- PDAC$orig.ident
+```
+
+
+```{r}
+# Create a new 'condition' column in metadata
+PDAC$group <- ifelse(
+  grepl("^P", PDAC$sample), # Check if sample starts with "P"
+  "Para", 
+  "Tumor"
+)
+```
+
+
+```{r}
+# note that you can set `label = TRUE` or use the LabelClusters function to help label
+# individual clusters
+DimPlot(PDAC, reduction = "umap",label=TRUE,group.by = 'group')
+```
+
+```{r}
+# View sample-condition mapping
+table(PDAC$seurat_clusters)
+```
+```{r}
+# View sample-condition mapping
+table(PDAC$sample)
+```
+
+```{r}
+DimPlot(
+  PDAC,
+  reduction = "umap",
+  split.by = "group",  # Split by sample column
+  label = TRUE,          # Label clusters
+  label.size = 4,        # Adjust label size
+  ncol = 2               # Arrange panels in 2 columns for 4 groups [1](@ref)
+) + 
+  theme(legend.position = "none")  # Remove legend if needed
+```
+
+```{r}
+DimPlot(
+  PDAC,
+  reduction = "umap",
+  split.by = "sample",  # Split by sample column
+  label = TRUE,          # Label clusters
+  label.size = 4,        # Adjust label size
+  ncol = 2               # Arrange panels in 2 columns for 4 groups [1](@ref)
+) + 
+  theme(legend.position = "none")  # Remove legend if needed
+```
+
+
+```{r}
+features <- c("KRT19","CFTR","PRSS1","CPA1","MS4A1","ACTA2","COL1A1","CD3E","CD3D","CD8A","FOXP3","CD68","CD163","PECAM1","RGS5","")
+```
+
+```{r}
+DotPlot(PDAC, features = features) + RotatedAxis()
+```
+
+
+
+
+
+
